@@ -30,7 +30,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install pyinstaller  # 安装 PyInstaller
           pip install poetry
-          poetry install
+
 
       - name: Set up cross-compilation (for aarch64)
         if: matrix.architecture == 'aarch64'
@@ -38,15 +38,17 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y qemu-user-static  # 安装 QEMU 以支持跨架构编译
           docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-
+          
       - name: Build for x86_64 or aarch64
         run: |
           # 使用 PyInstaller 打包 Python 程序
           if [[ "${{ matrix.architecture }}" == "aarch64" ]]; then
             # 为 aarch64 架构打包
+            poetry install
             pyinstaller --onefile --name payload_dumper_aarch64 src/payload_dumper/__main__.py
           else
             # 为 x86_64 架构打包
+            poetry install
             pyinstaller --onefile --name payload_dumper_x86_64 src/payload_dumper/__main__.py
           fi
 
